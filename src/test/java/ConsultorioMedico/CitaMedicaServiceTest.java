@@ -105,7 +105,7 @@ class CitaMedicaServiceTest {
 
     @Test
     void registrarCita_DebeLanzarExcepcion_CuandoEsDomingo() {
-        citaPrueba.setFechaHora(LocalDateTime.of(2026, 9, 13, 10, 0)); // domingo
+        citaPrueba.setFechaHora(LocalDateTime.of(2026, 9, 13, 10, 0));
         when(pacienteRepository.existsById(10L)).thenReturn(true);
         when(medicoRepository.existsById(20L)).thenReturn(true);
         when(citaRepository.existsByMedicoIdAndFechaHora(20L, citaPrueba.getFechaHora())).thenReturn(false);
@@ -120,7 +120,7 @@ class CitaMedicaServiceTest {
 
     @Test
     void registrarCita_DebeLanzarExcepcion_CuandoEstaFueraDelHorarioLaboral() {
-        citaPrueba.setFechaHora(LocalDateTime.of(2026, 9, 10, 22, 0)); // jueves 22:00
+        citaPrueba.setFechaHora(LocalDateTime.of(2026, 9, 10, 22, 0));
         when(pacienteRepository.existsById(10L)).thenReturn(true);
         when(medicoRepository.existsById(20L)).thenReturn(true);
         when(citaRepository.existsByMedicoIdAndFechaHora(20L, citaPrueba.getFechaHora())).thenReturn(false);

@@ -11,5 +11,9 @@ public interface CitaMedicaRepository extends JpaRepository<CitaMedica, Long> {
 
     boolean existsByMedicoIdAndFechaHora(Long medicoId, LocalDateTime fechaHora);
 
+    boolean existsByPacienteId(Long pacienteId);
+
+    boolean existsByMedicoId(Long medicoId);
+
     List<CitaMedica> findAllByOrderByFechaHoraAsc();
 }
