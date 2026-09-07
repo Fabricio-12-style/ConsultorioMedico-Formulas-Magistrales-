@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -100,5 +101,54 @@ class CitaMedicaServiceTest {
         assertNotNull(resultado);
         assertEquals(10L, resultado.getPacienteId());
         verify(citaRepository, times(1)).save(citaPrueba);
+    }
+
+    @Test
+    void registrarCita_DebeLanzarExcepcion_CuandoEsDomingo() {
+        citaPrueba.setFechaHora(LocalDateTime.of(2026, 9, 13, 10, 0)); // domingo
+        when(pacienteRepository.existsById(10L)).thenReturn(true);
+        when(medicoRepository.existsById(20L)).thenReturn(true);
+        when(citaRepository.existsByMedicoIdAndFechaHora(20L, citaPrueba.getFechaHora())).thenReturn(false);
+
+        IllegalArgumentException excepcion = assertThrows(IllegalArgumentException.class, () -> {
+            citaService.registrarCita(citaPrueba);
+        });
+
+        assertTrue(excepcion.getMessage().contains("no atiende los domingos"));
+        verify(citaRepository, never()).save(any(CitaMedica.class));
+    }
+
+    @Test
+    void registrarCita_DebeLanzarExcepcion_CuandoEstaFueraDelHorarioLaboral() {
+        citaPrueba.setFechaHora(LocalDateTime.of(2026, 9, 10, 22, 0)); // jueves 22:00
+        when(pacienteRepository.existsById(10L)).thenReturn(true);
+        when(medicoRepository.existsById(20L)).thenReturn(true);
+        when(citaRepository.existsByMedicoIdAndFechaHora(20L, citaPrueba.getFechaHora())).thenReturn(false);
+
+        IllegalArgumentException excepcion = assertThrows(IllegalArgumentException.class, () -> {
+            citaService.registrarCita(citaPrueba);
+        });
+
+        assertTrue(excepcion.getMessage().contains("fuera del horario laboral"));
+        verify(citaRepository, never()).save(any(CitaMedica.class));
+    }
+
+    @Test
+    void actualizarCita_DebeDevolverVacio_CuandoLaCitaNoExiste() {
+        when(citaRepository.findById(99L)).thenReturn(Optional.empty());
+
+        Optional<CitaMedica> resultado = citaService.actualizarCita(99L, citaPrueba);
+
+        assertTrue(resultado.isEmpty());
+        verify(citaRepository, never()).save(any(CitaMedica.class));
+    }
+
+    @Test
+    void eliminarCita_DebeDevolverFalse_CuandoLaCitaNoExiste() {
+        when(citaRepository.existsById(99L)).thenReturn(false);
+
+        assertFalse(citaService.eliminarCita(99L));
+
+        verify(citaRepository, never()).deleteById(anyLong());
     }
 }

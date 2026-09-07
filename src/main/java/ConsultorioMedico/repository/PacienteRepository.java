@@ -1,9 +1,8 @@
 package ConsultorioMedico.repository;
-import ConsultorioMedico.model.Paciente;
-import java.util.Optional;
 
-public interface PacienteRepository {
-    boolean existsById(Long id);
-    Optional<Paciente> findById(Long id);
-    Paciente save(Paciente paciente);
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import ConsultorioMedico.model.Paciente;
+
+public interface PacienteRepository extends JpaRepository<Paciente, Long> {
 }

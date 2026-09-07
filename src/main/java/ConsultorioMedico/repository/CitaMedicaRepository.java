@@ -1,16 +1,15 @@
 package ConsultorioMedico.repository;
 
-import ConsultorioMedico.model.CitaMedica;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
-public interface CitaMedicaRepository {
-    CitaMedica save(CitaMedica cita);
+import org.springframework.data.jpa.repository.JpaRepository;
 
-    Optional<CitaMedica> findById(Long id);
+import ConsultorioMedico.model.CitaMedica;
 
-    List<CitaMedica> findAll();
+public interface CitaMedicaRepository extends JpaRepository<CitaMedica, Long> {
 
     boolean existsByMedicoIdAndFechaHora(Long medicoId, LocalDateTime fechaHora);
+
+    List<CitaMedica> findAllByOrderByFechaHoraAsc();
 }
